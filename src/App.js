@@ -1,24 +1,38 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react';
+import LandingPage from './components/LandingPage';
+import Board from './components/Board';
 
 function App() {
+
+  const [status, setStatus] = useState({
+    green: {
+      name: 'safeer',
+      playing: true,
+      bot: false
+    },
+    yellow: {
+      name: 'Yellow',
+      playing: false,
+      bot: false
+    },
+    blue: {
+      name: '',
+      playing: true,
+      bot: false
+    },
+    red: {
+      name: '',
+      playing: false,
+      bot: false
+    }
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <LandingPage setStatus={setStatus} />
+      <Board status={status} />
+    </>
   );
 }
 
