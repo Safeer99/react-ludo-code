@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Dice from './Dice';
 import Token from './Token';
 import details from '../details.json';
@@ -8,6 +8,7 @@ import yellowTokenImage from '../assets/images/yellowToken.png'
 import blueTokenImage from '../assets/images/blueToken.png'
 import redTokenImage from '../assets/images/redToken.png'
 
+let counter = 0;
 
 function Board(props) {
     let boardWidth, boardHeight, diceBoardWidth, diceBoardHeight, flexDirection = "row";
@@ -26,8 +27,6 @@ function Board(props) {
         diceBoardHeight = boardHeight;
     }
     let tokenSize = boardWidth / 15;
-
-    // let tokenDistance = []
 
     const [positions, setPositions] = useState([
         { color: 'green', id: 'g1', p: 'g1' },
@@ -48,11 +47,24 @@ function Board(props) {
         { color: 'red', id: 'r4', p: 'r4' }
     ])
 
+    const [botMoves, setBotMoves] = useState([]);
     const [number, setNumber] = useState(0);
-    const [turn, setTurn] = useState('green');
-    const [changeTurn, setChangeTurn] = useState(false);
+    const [turn, setTurn] = useState('red');
+    const [changeTurn, setChangeTurn] = useState(true);
     const [collideTokenID, setCollideTokenID] = useState("");
     const [botRollDice, setBotRollDice] = useState(false);
+    const [block, setBlock] = useState(true);
+    const [selectedID, setSelectedID] = useState('');
+
+    useEffect(() => {
+        //? check if now bot can roll dice or not
+        if (!changeTurn && block) {
+            turn === 'green' && props.status.green.bot ? setBotRollDice(true) :
+                turn === 'yellow' && props.status.yellow.bot ? setBotRollDice(true) :
+                    turn === 'blue' && props.status.blue.bot ? setBotRollDice(true) :
+                        turn === 'red' && props.status.red.bot ? setBotRollDice(true) : setBotRollDice(false);
+        }
+    }, [setBotRollDice, props, turn, changeTurn, block])
 
     useEffect(() => {
         if (changeTurn) {
@@ -69,19 +81,65 @@ function Board(props) {
                 props.status.green.playing ? setTurn('green') : props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : setTurn('red');
             }
             setChangeTurn(false);
-            setTimeout(() => {
-                setNumber(0);
-            }, 1000);
         }
-    }, [setTurn, changeTurn, props, turn])
+    }, [changeTurn, props, turn])
 
-    //? check if now bot can roll dice or not
+    const idSelector = useCallback(() => {
+        botMoves.forEach(element => {
+            if (element.move === 'K') {
+                setSelectedID(element.id);
+            }
+        })
+        if (selectedID === '') {
+            botMoves.forEach(element => {
+                if (element.move === 'S') {
+                    setSelectedID(element.id);
+                }
+            })
+            if (selectedID === '') {
+                botMoves.forEach(element => {
+                    if (element.move === 'O') {
+                        setSelectedID(element.id);
+                    }
+                })
+                if (selectedID === '') {
+                    botMoves.forEach(element => {
+                        if (element.move === 'R') {
+                            setSelectedID(element.id);
+                        }
+                    })
+                    if (selectedID === '') {
+                        botMoves.forEach(element => {
+                            if (element.move === 'N') {
+                                setSelectedID(element.id);
+                            }
+                        })
+                    }
+                }
+            }
+        }
+        setBotMoves([]);
+    }, [selectedID, botMoves])
+
     useEffect(() => {
-        turn === 'green' && props.status.green.bot ? setBotRollDice(true) :
-            turn === 'yellow' && props.status.yellow.bot ? setBotRollDice(true) :
-                turn === 'blue' && props.status.blue.bot ? setBotRollDice(true) :
-                    turn === 'red' && props.status.red.bot ? setBotRollDice(true) : setBotRollDice(false);
-    }, [setBotRollDice, props, turn])
+        if (botMoves.length === 4) {
+            botMoves.forEach(element => {
+                if (element.move === '') {
+                    counter++;
+                }
+            });
+            if (counter < 3) {
+                // console.log(counter);
+                setSelectedID(botMoves[0].id);
+                setBotMoves([]);
+                // idSelector();
+            }
+            else if (counter === 4) {
+                setBotMoves([]);
+            }
+            counter = 0;
+        }
+    }, [botMoves])
 
     return (
         <>
@@ -107,6 +165,11 @@ function Board(props) {
                                     collideTokenID={collideTokenID}
                                     setCollideTokenID={setCollideTokenID}
                                     botPlaying={props.status.green.bot}
+                                    setBlock={setBlock}
+                                    setBotMoves={setBotMoves}
+                                    botMoves={botMoves}
+                                    selectedID={selectedID}
+                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }
@@ -129,6 +192,11 @@ function Board(props) {
                                     collideTokenID={collideTokenID}
                                     setCollideTokenID={setCollideTokenID}
                                     botPlaying={props.status.yellow.bot}
+                                    setBlock={setBlock}
+                                    setBotMoves={setBotMoves}
+                                    botMoves={botMoves}
+                                    selectedID={selectedID}
+                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }
@@ -151,6 +219,11 @@ function Board(props) {
                                     collideTokenID={collideTokenID}
                                     setCollideTokenID={setCollideTokenID}
                                     botPlaying={props.status.blue.bot}
+                                    setBlock={setBlock}
+                                    setBotMoves={setBotMoves}
+                                    botMoves={botMoves}
+                                    selectedID={selectedID}
+                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }
@@ -172,7 +245,12 @@ function Board(props) {
                                     path={element.path}
                                     collideTokenID={collideTokenID}
                                     setCollideTokenID={setCollideTokenID}
-                                    botPlaying={props.status.true.bot}
+                                    botPlaying={props.status.red.bot}
+                                    setBlock={setBlock}
+                                    setBotMoves={setBotMoves}
+                                    botMoves={botMoves}
+                                    selectedID={selectedID}
+                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }
@@ -185,6 +263,8 @@ function Board(props) {
                         number={number}
                         botRollDice={botRollDice}
                         setBotRollDice={setBotRollDice}
+                        block={block}
+                        setBlock={setBlock}
                     />
                     <div className="playerName" style={{ color: "white", fontSize: "1.5rem" }}>
                         {turn}'s turn

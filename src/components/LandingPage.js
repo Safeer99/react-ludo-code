@@ -14,65 +14,57 @@ function LandingPage(props) {
 
     const [green, setGreen] = useState({
         name: '',
-        playing: false,
         bot: false
     });
 
     const [yellow, setYellow] = useState({
         name: '',
-        playing: false,
         bot: false
     });
 
     const [blue, setBlue] = useState({
         name: '',
-        playing: false,
         bot: false
     });
 
     const [red, setRed] = useState({
         name: '',
-        playing: false,
         bot: false
     });
 
-    let totalBots = 0, totalPlayers = 0, garbage = 0;
+    let totalBots = 0, totalPlayers = 0, garbage = 0, n = 0;
 
     useEffect(() => {
 
         //? changing green name
-        let gName;
-        green.name === 'GreenBot' ? gName = '' : gName = green.name;
-        green.bot ? setGreen({ ...green, name: "GreenBot" }) : setGreen({ ...green, name: gName });
+        green.bot && green.name !== 'GreenBot' ? setGreen({ ...green, name: "GreenBot" }) :
+            !green.bot && green.name === 'GreenBot' ? setGreen({ ...green, name: "" }) : n++;
 
-    }, [green])
+    }, [green, n])
 
     useEffect(() => {
 
         //? changing yellow name
-        let yName;
-        yellow.name === 'YellowBot' ? yName = '' : yName = yellow.name;
-        yellow.bot ? setYellow({ ...yellow, name: "YellowBot" }) : setYellow({ ...yellow, name: yName });
+        yellow.bot && yellow.name !== 'YellowBot' ? setYellow({ ...yellow, name: "YellowBot" }) :
+            !yellow.bot && yellow.name === 'YellowBot' ? setYellow({ ...yellow, name: "" }) : n++;
 
-    }, [yellow])
+    }, [yellow, n])
 
     useEffect(() => {
 
         //? changing blue name
-        let bName;
-        blue.name === 'BlueBot' ? bName = '' : bName = blue.name;
-        blue.bot ? setBlue({ ...blue, name: "BlueBot" }) : setBlue({ ...blue, name: bName });
+        blue.bot && blue.name !== 'BlueBot' ? setBlue({ ...blue, name: "BlueBot" }) :
+            !blue.bot && blue.name === 'BlueBot' ? setBlue({ ...blue, name: "" }) : n++;
 
-    }, [blue])
+    }, [blue, n])
 
     useEffect(() => {
 
         //? changing red name
-        let rName;
-        red.name !== 'RedBot' ? rName = red.name : rName = '';
-        red.bot ? setRed({ ...red, name: "RedBot" }) : setRed({ ...red, name: rName });
+        red.bot && red.name !== 'RedBot' ? setRed({ ...red, name: "RedBot" }) :
+            !red.bot && red.name === 'RedBot' ? setRed({ ...red, name: "" }) : n++;
 
-    }, [red])
+    }, [red, n])
 
     const statusChange = () => {
 
@@ -116,7 +108,7 @@ function LandingPage(props) {
             )
         }
         else {
-            window.alert("Atleast one player and one bot has to play!!!")
+            window.alert("Atleast one player and one bot has to play!!!");
         }
     }
 

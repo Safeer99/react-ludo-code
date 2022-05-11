@@ -6,7 +6,7 @@ function Dice(props) {
     const [animation, setAnimation] = useState('');
 
     const rollDice = useCallback(() => {
-        if (props.number === 0) {
+        if (props.number === 0 && props.block) {
             // let audio = new Audio(rollingSound);
             // audio.play();
             let number = Math.floor(1 + (6) * Math.random());
@@ -18,7 +18,7 @@ function Dice(props) {
                     }, 100);
                 }
             }
-            props.setBotRollDice(false);
+            props.setBlock(false);
             setTimeout(() => {
                 props.setNumber(number);
             }, 500);
@@ -27,6 +27,7 @@ function Dice(props) {
 
     useEffect(() => {
         if (props.botRollDice) {
+            props.setBotRollDice(false);
             setTimeout(() => {
                 rollDice();
             }, 500);

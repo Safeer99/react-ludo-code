@@ -20,8 +20,8 @@ const board = [
 const safeZone = ['11', '22', '33', '44', '58', '70', '82', '94'];
 let count = 0;
 let counter;
+let check = 0;
 let tempID, tempNumber;
-let a = 0;
 
 function Token(props) {
 
@@ -37,6 +37,52 @@ function Token(props) {
     const [canMove, setCanMove] = useState(0);
     const [zIndex, setZIndex] = useState(1);
 
+    //? moving bot (bot AI)
+    useEffect(() => {
+        if (props.turn === props.color && props.botPlaying && props.number !== 0 && props.botMoves.length < 4) {
+            setZIndex(2);
+            //? checking if the token is at the end and doesn't get the right number
+            if (positionCount + props.number > 57) {
+                props.setBotMoves(p => [...p, { id: props.id, move: '' }]);
+            }
+            //? check if the token is lock
+            else if (positionCount === 0 && props.number !== 6) {
+                props.setBotMoves(p => [...p, { id: props.id, move: '' }]);
+            }
+            //? checking if the token can be eligible for open
+            else if (positionCount === 0 && props.number === 6) {
+                props.setBotMoves(p => [...p, { id: props.id, move: 'O' }]);
+            }
+            //? checking if the token is eligible for run
+            else if (positionCount + props.number === 57) {
+                props.setBotMoves(p => [...p, { id: props.id, move: 'R' }]);
+            }
+            else {
+                //? checking if the token is at safe spot after this turn
+                safeZone.forEach(element => {
+                    if (element === props.path[positionCount + props.number]) {
+                        props.setBotMoves(p => [...p, { id: props.id, move: 'S' }]);
+                        check++;
+                    }
+                });
+                if (check === 0) {
+                    //? checking if the token can kill another token
+                    props.positions.forEach(element => {
+                        if (element.color !== props.turn && element.p === props.path[positionCount + props.number]) {
+                            props.setBotMoves(p => [...p, { id: props.id, move: 'K' }]);
+                            check++;
+                        }
+                    });
+                    if (check === 0) {
+                        props.setBotMoves(p => [...p, { id: props.id, move: 'N' }]);
+                    }
+                    else { check = 0; }
+                }
+                else { check = 0; }
+            }
+        }
+    }, [props, positionCount])
+
     //? deciding which token is eligible for move and then changing their size
     useEffect(() => {
         if (props.turn === props.color) {
@@ -44,7 +90,7 @@ function Token(props) {
             if (props.number === 6) {
                 positionCount < 58 - props.number ? setScale(1.2) : count++;
             }
-            else if (props.number <= 0) {
+            else if (props.number === 0) {
                 setScale(0.8);
                 count = 0;
             }
@@ -52,51 +98,13 @@ function Token(props) {
                 positionCount < 58 - props.number && positionCount > 0 ? setScale(1.2) : count++;
             }
         }
-        // else if (props.turn === 'yellow' && props.color === 'yellow') {
-        //     setZIndex(2);
-        //     if (props.number === 6) {
-        //         positionCount < 58 - props.number ? setScale(1.2) : count++;
-        //     }
-        //     else if (props.number <= 0) {
-        //         setScale(0.8);
-        //         count = 0;
-        //     }
-        //     else if (props.number > 0) {
-        //         positionCount < 58 - props.number && positionCount > 0 ? setScale(1.2) : count++;
-        //     }
-        // }
-        // else if (props.turn === 'blue' && props.color === 'blue') {
-        //     setZIndex(2);
-        //     if (props.number === 6) {
-        //         positionCount < 58 - props.number ? setScale(1.2) : count++;
-        //     }
-        //     else if (props.number <= 0) {
-        //         setScale(0.8);
-        //         count = 0;
-        //     }
-        //     else if (props.number > 0) {
-        //         positionCount < 58 - props.number && positionCount > 0 ? setScale(1.2) : count++;
-        //     }
-        // }
-        // else if (props.turn === 'red' && props.color === 'red') {
-        //     setZIndex(2);
-        //     if (props.number === 6) {
-        //         positionCount < 58 - props.number ? setScale(1.2) : count++;
-        //     }
-        //     else if (props.number <= 0) {
-        //         setScale(0.8);
-        //         count = 0;
-        //     }
-        //     else if (props.number > 0) {
-        //         positionCount < 58 - props.number && positionCount > 0 ? setScale(1.2) : count++;
-        //     }
-        // }
         else {
             setZIndex(1);
         }
         if (count === 4) {
             props.setChangeTurn(true);
             props.setNumber(0);
+            props.setBlock(true);
             count = 0;
         }
     }, [positionCount, props])
@@ -138,7 +146,8 @@ function Token(props) {
                 }
             });
             //? extra chance if collide
-            props.collideTokenID === "" && tempNumber !== 6 && tempNumber !== 0 ? props.setChangeTurn(true) : props.setChangeTurn(false);
+            props.setBlock(true);
+            props.collideTokenID === "" && tempNumber !== 6 && tempNumber !== 0 && positionCount !== 58 ? props.setChangeTurn(true) : props.setChangeTurn(false);
             counter = -1;
             tempID = "";
             tempNumber = 0;
@@ -159,18 +168,20 @@ function Token(props) {
         }
         //? returning token back at start
         if (props.id === props.collideTokenID) {
-            let j = positionCount;
-            setInterval(() => {
-                if (j >= 0) {
-                    setPositionCount(p => {
-                        return p - 1;
-                    });
-                    j--;
-                }
-            }, 250);
-            // setPositionCount(p => {
-            //     return p * 0;
-            // });
+            // let j = positionCount;
+            // setInterval(() => {
+            //     if (j > 0) {
+            //         setPositionCount(p => {
+            //             return p - 1;
+            //         });
+            //         j--;
+            //     }
+            // }, 200);
+            setTimeout(() => {
+                setPositionCount(p => {
+                    return p * 0;
+                });
+            }, 500);
             props.setCollideTokenID("");
         }
     }, [canMove, positionCount, props])
@@ -183,7 +194,7 @@ function Token(props) {
                 setPositionCount(p => {
                     return p + 1;
                 });
-                props.setNumber(0);
+                props.setBlock(true);
             }
             else {
                 //? incresing counter for moving multiple steps
@@ -196,39 +207,22 @@ function Token(props) {
                         i++;
                     }
                 }, 350);
-                props.setNumber(-1);
             }
+            props.setNumber(0);
         }
     }, [props, scale, positionCount])
 
-    //? moving bot (bot AI)
     useEffect(() => {
-        if (count === 3 && scale === 1.2) {
+        if (count === 3 && scale === 1.2 && props.number !== 0) {
+            count = 0;
             move();
         }
-        if (props.turn === props.color && props.botPlaying && count < 3) {
-            //? check if all the token is lock
-            props.positions.forEach(element => {
-                if (element.color === props.color && (element.id === element.p || element.p === props.path[positionCount])) {
-                    a++;
-                }
-            });
-            if (a === 4) {
-
-            }
-            else if (a === 3) {
-                // let min = '100';
-                props.positions.forEach(i => {
-                    props.positions.forEach(j => {
-                        if (i.id === 'g1' && j.color !== 'green') {
-
-                        }
-                    });
-                });
-            }
-            a = 0;
+        //? move the chosen token
+        else if (props.id === props.selectedID) {
+            props.setSelectedID('');
+            move();
         }
-    }, [scale, props, move, positionCount])
+    }, [props, move, scale])
 
     return (
         <div className='tokens' id={`${props.id}`} onClick={move} style={{
