@@ -7,23 +7,23 @@ function App() {
 
   const [status, setStatus] = useState({
     green: {
-      name: '',
+      name: 'GreenBot',
       playing: true,
       bot: false
     },
     yellow: {
-      name: '',
-      playing: false,
+      name: 'YellowBot',
+      playing: true,
       bot: false
     },
     blue: {
-      name: '',
+      name: 'BlueBot',
       playing: true,
-      bot: true
+      bot: false
     },
     red: {
-      name: '',
-      playing: false,
+      name: 'RedBot',
+      playing: true,
       bot: false
     }
   });

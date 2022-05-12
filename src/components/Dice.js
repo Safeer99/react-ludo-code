@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-// import rollingSound from '../assets/audio/dice-roll-sound-effect.mp3';
+import rollingSound from '../assets/audio/dice-roll-sound-effect.mp3';
 
 function Dice(props) {
 
@@ -7,8 +7,8 @@ function Dice(props) {
 
     const rollDice = useCallback(() => {
         if (props.number === 0 && props.block) {
-            // let audio = new Audio(rollingSound);
-            // audio.play();
+            let audio = new Audio(rollingSound);
+            audio.play();
             let number = Math.floor(1 + (6) * Math.random());
             for (let i = 1; i <= 6; i++) {
                 if (number === i) {
@@ -32,7 +32,7 @@ function Dice(props) {
                 rollDice();
             }, 500);
         }
-    }, [props.botRollDice, rollDice])
+    }, [props, rollDice])
 
     return (
         <div>

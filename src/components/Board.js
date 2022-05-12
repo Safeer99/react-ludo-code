@@ -21,7 +21,7 @@ function Board(props) {
         flexDirection = "column";
     }
     else {
-        boardWidth = window.innerWidth / 2.3;
+        boardWidth = window.innerWidth / 2.5;
         boardHeight = boardWidth;
         diceBoardWidth = boardWidth / 1.5;
         diceBoardHeight = boardHeight;
@@ -49,12 +49,13 @@ function Board(props) {
 
     const [botMoves, setBotMoves] = useState([]);
     const [number, setNumber] = useState(0);
-    const [turn, setTurn] = useState('red');
-    const [changeTurn, setChangeTurn] = useState(true);
+    const [turn, setTurn] = useState('green');
+    const [changeTurn, setChangeTurn] = useState(false);
     const [collideTokenID, setCollideTokenID] = useState("");
     const [botRollDice, setBotRollDice] = useState(false);
     const [block, setBlock] = useState(true);
     const [selectedID, setSelectedID] = useState('');
+    const [name, setName] = useState('');
 
     useEffect(() => {
         //? check if now bot can roll dice or not
@@ -68,78 +69,93 @@ function Board(props) {
 
     useEffect(() => {
         if (changeTurn) {
-            if (turn === 'green') {
-                props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : setTurn('green');
-            }
-            else if (turn === 'yellow') {
-                props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : props.status.green.playing ? setTurn('green') : setTurn('yellow');
-            }
-            else if (turn === 'blue') {
-                props.status.red.playing ? setTurn('red') : props.status.green.playing ? setTurn('green') : props.status.yellow.playing ? setTurn('yellow') : setTurn('blue');
-            }
-            else if (turn === 'red') {
-                props.status.green.playing ? setTurn('green') : props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : setTurn('red');
-            }
-            setChangeTurn(false);
+            setTimeout(() => {
+                if (turn === 'green') {
+                    props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : setTurn('green');
+                }
+                else if (turn === 'yellow') {
+                    props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : props.status.green.playing ? setTurn('green') : setTurn('yellow');
+                }
+                else if (turn === 'blue') {
+                    props.status.red.playing ? setTurn('red') : props.status.green.playing ? setTurn('green') : props.status.yellow.playing ? setTurn('yellow') : setTurn('blue');
+                }
+                else if (turn === 'red') {
+                    props.status.green.playing ? setTurn('green') : props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : setTurn('red');
+                }
+                setChangeTurn(false);
+            }, 500);
         }
     }, [changeTurn, props, turn])
 
     const idSelector = useCallback(() => {
+        counter = 0;
         botMoves.forEach(element => {
-            if (element.move === 'K') {
+            if (element.move === 'K' && counter === 0) {
                 setSelectedID(element.id);
+                counter++;
             }
         })
-        if (selectedID === '') {
+        if (counter === 0) {
             botMoves.forEach(element => {
-                if (element.move === 'S') {
+                if (element.move === 'S' && counter === 0) {
                     setSelectedID(element.id);
+                    counter++;
                 }
             })
-            if (selectedID === '') {
+            if (counter === 0) {
                 botMoves.forEach(element => {
-                    if (element.move === 'O') {
+                    if (element.move === 'O' && counter === 0) {
                         setSelectedID(element.id);
+                        counter++;
                     }
                 })
-                if (selectedID === '') {
+                if (counter === 0) {
                     botMoves.forEach(element => {
-                        if (element.move === 'R') {
+                        if (element.move === 'R' && counter === 0) {
                             setSelectedID(element.id);
+                            counter++;
                         }
                     })
-                    if (selectedID === '') {
+                    if (counter === 0) {
                         botMoves.forEach(element => {
-                            if (element.move === 'N') {
+                            if (element.move === 'N' && counter === 0) {
                                 setSelectedID(element.id);
+                                counter++;
                             }
                         })
                     }
                 }
             }
         }
+        counter = 0;
         setBotMoves([]);
-    }, [selectedID, botMoves])
+    }, [botMoves])
 
     useEffect(() => {
-        if (botMoves.length === 4) {
+        if (botMoves.length === 4 && selectedID === '') {
             botMoves.forEach(element => {
                 if (element.move === '') {
                     counter++;
                 }
             });
             if (counter < 3) {
-                // console.log(counter);
-                setSelectedID(botMoves[0].id);
-                setBotMoves([]);
-                // idSelector();
+                idSelector();
             }
-            else if (counter === 4) {
+            else if (counter === 4 || counter === 3) {
                 setBotMoves([]);
+                counter = 0;
             }
-            counter = 0;
         }
-    }, [botMoves])
+    }, [botMoves, idSelector, selectedID])
+
+    useEffect(() => {
+        //? changing the name of player on screen
+        turn === 'green' ? setName(props.status.green.name) :
+            turn === 'yellow' ? setName(props.status.yellow.name) :
+                turn === 'blue' ? setName(props.status.blue.name) :
+                    turn === 'red' ? setName(props.status.red.name) : setName('');
+
+    }, [name, turn, props])
 
     return (
         <>
@@ -266,8 +282,13 @@ function Board(props) {
                         block={block}
                         setBlock={setBlock}
                     />
-                    <div className="playerName" style={{ color: "white", fontSize: "1.5rem" }}>
-                        {turn}'s turn
+                    <div className="playerName" style={{ textShadow: `2px 2px 5px ${turn}, -2px -2px 5px ${turn}` }}>
+                        <div>
+                            {name}'s
+                        </div>
+                        <div>
+                            Turn
+                        </div>
                     </div>
                 </div>
             </div>

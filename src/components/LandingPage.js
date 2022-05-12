@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react'
 
 function LandingPage(props) {
 
-    const [visibility, setVisibility] = useState('hidden');
+    const [visibility, setVisibility] = useState('visible');
 
     const [green, setGreen] = useState({
         name: '',
@@ -80,8 +80,8 @@ function LandingPage(props) {
 
         if ((totalPlayers > 0 && totalBots > 0) || totalPlayers > 1) {
             setVisibility('hidden');
-            // const dice = document.getElementById('sides-box');
-            // dice.style.animation = 'none';
+            const dice = document.getElementById('sides-box');
+            dice.style.animation = 'none';
             props.setStatus(
                 {
                     green: {
@@ -157,8 +157,8 @@ function LandingPage(props) {
                 <div className="button player">
                     <button id="start" onClick={statusChange}>Start</button>
                 </div>
-                <div style={{ color: 'white', padding: '10px' }}>
-                    Safeer Ansari
+                <div className="creator">
+                    Developer :- Safeer Ansari
                 </div>
             </div>
         </div>

@@ -40,7 +40,6 @@ function Token(props) {
     //? moving bot (bot AI)
     useEffect(() => {
         if (props.turn === props.color && props.botPlaying && props.number !== 0 && props.botMoves.length < 4) {
-            setZIndex(2);
             //? checking if the token is at the end and doesn't get the right number
             if (positionCount + props.number > 57) {
                 props.setBotMoves(p => [...p, { id: props.id, move: '' }]);
@@ -147,7 +146,7 @@ function Token(props) {
             });
             //? extra chance if collide
             props.setBlock(true);
-            props.collideTokenID === "" && tempNumber !== 6 && tempNumber !== 0 && positionCount !== 58 ? props.setChangeTurn(true) : props.setChangeTurn(false);
+            props.collideTokenID === "" && tempNumber !== 6 && tempNumber !== 0 && positionCount !== 57 ? props.setChangeTurn(true) : props.setChangeTurn(false);
             counter = -1;
             tempID = "";
             tempNumber = 0;
@@ -189,6 +188,7 @@ function Token(props) {
     //? moving the eligible token when the user clicks
     const move = useCallback(() => {
         if (scale === 1.2) {
+            if (props.botPlaying) { console.log(props.id, "inside move", props.number); }
             if (positionCount === 0) {
                 //? increasing position counter
                 setPositionCount(p => {
@@ -218,8 +218,10 @@ function Token(props) {
             move();
         }
         //? move the chosen token
-        else if (props.id === props.selectedID) {
+        else if (props.id === props.selectedID && scale === 1.2 && count < 3 && props.number !== 0) {
             props.setSelectedID('');
+            console.log(props.id, "outside move", props.number);
+            count = 0;
             move();
         }
     }, [props, move, scale])
