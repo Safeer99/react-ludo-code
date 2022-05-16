@@ -4,6 +4,7 @@ import rollingSound from '../assets/audio/dice-roll-sound-effect.mp3';
 function Dice(props) {
 
     const [animation, setAnimation] = useState('');
+    const [off, setOff] = useState('all');
 
     const rollDice = useCallback(() => {
         if (props.number === 0 && props.block) {
@@ -19,6 +20,7 @@ function Dice(props) {
                 }
             }
             props.setBlock(false);
+            setOff('all')
             setTimeout(() => {
                 props.setNumber(number);
             }, 500);
@@ -28,6 +30,7 @@ function Dice(props) {
     useEffect(() => {
         if (props.botRollDice) {
             props.setBotRollDice(false);
+            setOff('none')
             setTimeout(() => {
                 rollDice();
             }, 500);
@@ -36,7 +39,7 @@ function Dice(props) {
 
     return (
         <div>
-            <div className="dice" id="roll" onClick={rollDice}>
+            <div className="dice" id="roll" onClick={rollDice} style={{ pointerEvents: `${off}` }}>
                 <div id="sides-box" className={`${animation}`}>
                     <div className="side">
                         <div className="one-1 dot"></div>

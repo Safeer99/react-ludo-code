@@ -23,6 +23,51 @@ let counter;
 let check = 0;
 let tempID, tempNumber;
 
+function idSelector(botMoves) {
+    let c = 0, selectedID = '';
+    botMoves.forEach(element => {
+        if (element.move === '') {
+            c++;
+        }
+    });
+    if (c < 3) {
+        botMoves.forEach(element => {
+            if (element.move === 'K' && selectedID === '') {
+                selectedID = element.id;
+            }
+        })
+        if (selectedID === '') {
+            botMoves.forEach(element => {
+                if (element.move === 'S' && selectedID === '') {
+                    selectedID = element.id;
+                }
+            })
+            if (selectedID === '') {
+                botMoves.forEach(element => {
+                    if (element.move === 'O' && selectedID === '') {
+                        selectedID = element.id;
+                    }
+                })
+                if (selectedID === '') {
+                    botMoves.forEach(element => {
+                        if (element.move === 'R' && selectedID === '') {
+                            selectedID = element.id;
+                        }
+                    })
+                    if (selectedID === '') {
+                        botMoves.forEach(element => {
+                            if (element.move === 'N' && selectedID === '') {
+                                selectedID = element.id;
+                            }
+                        })
+                    }
+                }
+            }
+        }
+    }
+    return selectedID;
+}
+
 function Token(props) {
 
     if (props.number > 0) {
@@ -36,6 +81,7 @@ function Token(props) {
     const [y, setY] = useState(props.y);
     const [canMove, setCanMove] = useState(0);
     const [zIndex, setZIndex] = useState(1);
+    const [selectedBot, setSelectedBot] = useState(false);
 
     //? moving bot (bot AI)
     useEffect(() => {
@@ -80,7 +126,13 @@ function Token(props) {
                 else { check = 0; }
             }
         }
-    }, [props, positionCount])
+        else if (props.botMoves.length === 4 && props.botPlaying) {
+            if (props.id === idSelector(props.botMoves)) {
+                console.log("****************");
+                setSelectedBot(true);
+            }
+        }
+    }, [props, positionCount, selectedBot])
 
     //? deciding which token is eligible for move and then changing their size
     useEffect(() => {
@@ -91,7 +143,6 @@ function Token(props) {
             }
             else if (props.number === 0) {
                 setScale(0.8);
-                count = 0;
             }
             else if (props.number > 0) {
                 positionCount < 58 - props.number && positionCount > 0 ? setScale(1.2) : count++;
@@ -104,6 +155,7 @@ function Token(props) {
             props.setChangeTurn(true);
             props.setNumber(0);
             props.setBlock(true);
+            props.setBotMoves([]);
             count = 0;
         }
     }, [positionCount, props])
@@ -188,7 +240,7 @@ function Token(props) {
     //? moving the eligible token when the user clicks
     const move = useCallback(() => {
         if (scale === 1.2) {
-            if (props.botPlaying) { console.log(props.id, "inside move", props.number); }
+            count = 0;
             if (positionCount === 0) {
                 //? increasing position counter
                 setPositionCount(p => {
@@ -213,18 +265,18 @@ function Token(props) {
     }, [props, scale, positionCount])
 
     useEffect(() => {
-        if (count === 3 && scale === 1.2 && props.number !== 0) {
-            count = 0;
-            move();
-        }
         //? move the chosen token
-        else if (props.id === props.selectedID && scale === 1.2 && count < 3 && props.number !== 0) {
-            props.setSelectedID('');
-            console.log(props.id, "outside move", props.number);
-            count = 0;
+        if (selectedBot && props.botPlaying && count < 3) {
+            console.log(props.id, "second");
+            props.setBotMoves([]);
+            setSelectedBot(false);
             move();
         }
-    }, [props, move, scale])
+        else if (count === 3 && scale === 1.2 && props.number !== 0) {
+            if (props.botPlaying) { props.setBotMoves([]); console.log("empty"); }
+            move();
+        }
+    }, [props, move, scale, selectedBot])
 
     return (
         <div className='tokens' id={`${props.id}`} onClick={move} style={{

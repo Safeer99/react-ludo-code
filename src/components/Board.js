@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import Dice from './Dice';
 import Token from './Token';
 import details from '../details.json';
@@ -7,8 +7,34 @@ import greenTokenImage from '../assets/images/greenToken.png'
 import yellowTokenImage from '../assets/images/yellowToken.png'
 import blueTokenImage from '../assets/images/blueToken.png'
 import redTokenImage from '../assets/images/redToken.png'
+import Winner from './Winner';
 
-let counter = 0;
+function winnerChecker(positions, rank, setRank) {
+    let gCount = 0, yCount = 0, bCount = 0, rCount = 0;
+    positions.forEach(element => {
+        if (element.color === 'green' && element.p === '06') {
+            gCount++;
+        } else if (element.color === 'yellow' && element.p === '09') {
+            yCount++;
+        } else if (element.color === 'blue' && element.p === '08') {
+            bCount++;
+        } else if (element.color === 'red' && element.p === '07') {
+            rCount++;
+        }
+    })
+    if (gCount === 4 && rank.first !== 'green' && rank.second !== 'green' && rank.third !== 'green') {
+        rank.first === '' ? setRank({ ...rank, first: "green" }) : rank.second === '' ? setRank({ ...rank, second: "green" }) : setRank({ ...rank, third: "green" });
+    }
+    if (yCount === 4 && rank.first !== 'yellow' && rank.second !== 'yellow' && rank.third !== 'yellow') {
+        rank.first === '' ? setRank({ ...rank, first: "yellow" }) : rank.second === '' ? setRank({ ...rank, second: "yellow" }) : setRank({ ...rank, third: "yellow" });
+    }
+    if (bCount === 4 && rank.first !== 'blue' && rank.second !== 'blue' && rank.third !== 'blue') {
+        rank.first === '' ? setRank({ ...rank, first: "blue" }) : rank.second === '' ? setRank({ ...rank, second: "blue" }) : setRank({ ...rank, third: "blue" });
+    }
+    if (rCount === 4 && rank.first !== 'red' && rank.second !== 'red' && rank.third !== 'red') {
+        rank.first === '' ? setRank({ ...rank, first: "red" }) : rank.second === '' ? setRank({ ...rank, second: "red" }) : setRank({ ...rank, third: "red" });
+    }
+}
 
 function Board(props) {
     let boardWidth, boardHeight, diceBoardWidth, diceBoardHeight, flexDirection = "row";
@@ -49,12 +75,11 @@ function Board(props) {
 
     const [botMoves, setBotMoves] = useState([]);
     const [number, setNumber] = useState(0);
-    const [turn, setTurn] = useState('green');
-    const [changeTurn, setChangeTurn] = useState(false);
+    const [turn, setTurn] = useState('red');
+    const [changeTurn, setChangeTurn] = useState(true);
     const [collideTokenID, setCollideTokenID] = useState("");
     const [botRollDice, setBotRollDice] = useState(false);
     const [block, setBlock] = useState(true);
-    const [selectedID, setSelectedID] = useState('');
     const [name, setName] = useState('');
 
     useEffect(() => {
@@ -69,6 +94,7 @@ function Board(props) {
 
     useEffect(() => {
         if (changeTurn) {
+            winnerChecker(positions, props.rank, props.setRank);
             setTimeout(() => {
                 if (turn === 'green') {
                     props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : setTurn('green');
@@ -85,68 +111,7 @@ function Board(props) {
                 setChangeTurn(false);
             }, 500);
         }
-    }, [changeTurn, props, turn])
-
-    const idSelector = useCallback(() => {
-        counter = 0;
-        botMoves.forEach(element => {
-            if (element.move === 'K' && counter === 0) {
-                setSelectedID(element.id);
-                counter++;
-            }
-        })
-        if (counter === 0) {
-            botMoves.forEach(element => {
-                if (element.move === 'S' && counter === 0) {
-                    setSelectedID(element.id);
-                    counter++;
-                }
-            })
-            if (counter === 0) {
-                botMoves.forEach(element => {
-                    if (element.move === 'O' && counter === 0) {
-                        setSelectedID(element.id);
-                        counter++;
-                    }
-                })
-                if (counter === 0) {
-                    botMoves.forEach(element => {
-                        if (element.move === 'R' && counter === 0) {
-                            setSelectedID(element.id);
-                            counter++;
-                        }
-                    })
-                    if (counter === 0) {
-                        botMoves.forEach(element => {
-                            if (element.move === 'N' && counter === 0) {
-                                setSelectedID(element.id);
-                                counter++;
-                            }
-                        })
-                    }
-                }
-            }
-        }
-        counter = 0;
-        setBotMoves([]);
-    }, [botMoves])
-
-    useEffect(() => {
-        if (botMoves.length === 4 && selectedID === '') {
-            botMoves.forEach(element => {
-                if (element.move === '') {
-                    counter++;
-                }
-            });
-            if (counter < 3) {
-                idSelector();
-            }
-            else if (counter === 4 || counter === 3) {
-                setBotMoves([]);
-                counter = 0;
-            }
-        }
-    }, [botMoves, idSelector, selectedID])
+    }, [changeTurn, props, turn, positions])
 
     useEffect(() => {
         //? changing the name of player on screen
@@ -161,6 +126,11 @@ function Board(props) {
         <>
             <div className='container' style={{ flexDirection: `${flexDirection}` }}>
                 <div className='board' style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}>
+                    <div style={{ width: `${boardWidth}px`, height: `${boardHeight}px`, position: "absolute", pointerEvents: 'none' }}>
+                        <Winner rank={'first'} color={props.rank.first} />
+                        <Winner rank={'second'} color={props.rank.second} />
+                        <Winner rank={'third'} color={props.rank.third} />
+                    </div>
                     {details.map((element) => {
                         if (element.colour === 'green' && props.status.green.playing) {
                             return <div key={element.id} >
@@ -184,8 +154,6 @@ function Board(props) {
                                     setBlock={setBlock}
                                     setBotMoves={setBotMoves}
                                     botMoves={botMoves}
-                                    selectedID={selectedID}
-                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }
@@ -211,8 +179,6 @@ function Board(props) {
                                     setBlock={setBlock}
                                     setBotMoves={setBotMoves}
                                     botMoves={botMoves}
-                                    selectedID={selectedID}
-                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }
@@ -238,8 +204,6 @@ function Board(props) {
                                     setBlock={setBlock}
                                     setBotMoves={setBotMoves}
                                     botMoves={botMoves}
-                                    selectedID={selectedID}
-                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }
@@ -265,8 +229,6 @@ function Board(props) {
                                     setBlock={setBlock}
                                     setBotMoves={setBotMoves}
                                     botMoves={botMoves}
-                                    selectedID={selectedID}
-                                    setSelectedID={setSelectedID}
                                 />
                             </div>
                         }

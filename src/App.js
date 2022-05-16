@@ -2,8 +2,13 @@ import './App.css';
 import React, { useState } from 'react';
 import LandingPage from './components/LandingPage';
 import Board from './components/Board';
+import EndingPage from './components/EndingPage';
 
 function App() {
+
+  const [rank, setRank] = useState({
+    first: '', second: '', third: ''
+  })
 
   const [status, setStatus] = useState({
     green: {
@@ -14,16 +19,16 @@ function App() {
     yellow: {
       name: 'YellowBot',
       playing: true,
-      bot: false
+      bot: true
     },
     blue: {
       name: 'BlueBot',
-      playing: true,
+      playing: false,
       bot: false
     },
     red: {
       name: 'RedBot',
-      playing: true,
+      playing: false,
       bot: false
     }
   });
@@ -31,7 +36,8 @@ function App() {
   return (
     <>
       <LandingPage setStatus={setStatus} />
-      <Board status={status} />
+      <Board status={status} rank={rank} setRank={setRank} />
+      <EndingPage rank={rank} />
     </>
   );
 }

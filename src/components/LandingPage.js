@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react'
 
 function LandingPage(props) {
 
-    const [visibility, setVisibility] = useState('visible');
+    const [visibility, setVisibility] = useState('hidden');
 
     const [green, setGreen] = useState({
         name: '',
