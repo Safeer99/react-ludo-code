@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Dice from './Dice';
 import Token from './Token';
 import details from '../details.json';
@@ -81,6 +81,15 @@ function Board(props) {
     const [botRollDice, setBotRollDice] = useState(false);
     const [block, setBlock] = useState(true);
     const [name, setName] = useState('');
+    const count = useRef(0);
+    const limiter = useRef(0);
+
+    useEffect(() => {
+        if (number === 0 && botMoves.length !== 0) {
+            count.current = 0;
+            setBotMoves([]);
+        }
+    }, [botMoves, number])
 
     useEffect(() => {
         //? check if now bot can roll dice or not
@@ -95,6 +104,7 @@ function Board(props) {
     useEffect(() => {
         if (changeTurn) {
             winnerChecker(positions, props.rank, props.setRank);
+            limiter.current = 0;
             setTimeout(() => {
                 if (turn === 'green') {
                     props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : setTurn('green');
@@ -152,8 +162,9 @@ function Board(props) {
                                     setCollideTokenID={setCollideTokenID}
                                     botPlaying={props.status.green.bot}
                                     setBlock={setBlock}
-                                    setBotMoves={setBotMoves}
+                                    count={count}
                                     botMoves={botMoves}
+                                    setBotMoves={setBotMoves}
                                 />
                             </div>
                         }
@@ -177,8 +188,9 @@ function Board(props) {
                                     setCollideTokenID={setCollideTokenID}
                                     botPlaying={props.status.yellow.bot}
                                     setBlock={setBlock}
-                                    setBotMoves={setBotMoves}
+                                    count={count}
                                     botMoves={botMoves}
+                                    setBotMoves={setBotMoves}
                                 />
                             </div>
                         }
@@ -202,8 +214,9 @@ function Board(props) {
                                     setCollideTokenID={setCollideTokenID}
                                     botPlaying={props.status.blue.bot}
                                     setBlock={setBlock}
-                                    setBotMoves={setBotMoves}
+                                    count={count}
                                     botMoves={botMoves}
+                                    setBotMoves={setBotMoves}
                                 />
                             </div>
                         }
@@ -227,8 +240,9 @@ function Board(props) {
                                     setCollideTokenID={setCollideTokenID}
                                     botPlaying={props.status.red.bot}
                                     setBlock={setBlock}
-                                    setBotMoves={setBotMoves}
+                                    count={count}
                                     botMoves={botMoves}
+                                    setBotMoves={setBotMoves}
                                 />
                             </div>
                         }
@@ -243,6 +257,7 @@ function Board(props) {
                         setBotRollDice={setBotRollDice}
                         block={block}
                         setBlock={setBlock}
+                        limiter={limiter}
                     />
                     <div className="playerName" style={{ textShadow: `2px 2px 5px ${turn}, -2px -2px 5px ${turn}` }}>
                         <div>

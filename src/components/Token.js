@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 
 const board = [
     ['00', '00', '00', '00', '00', '00', '60', '61', '62', '00', '00', '00', '00', '00', '00'],
@@ -18,7 +18,6 @@ const board = [
     ['00', '00', '00', '00', '00', '00', '86', '85', '84', '00', '00', '00', '00', '00', '00']
 ]
 const safeZone = ['11', '22', '33', '44', '58', '70', '82', '94'];
-let count = 0;
 let counter;
 let check = 0;
 let tempID, tempNumber;
@@ -75,13 +74,14 @@ function Token(props) {
         tempNumber = props.number;
     }
 
-    const [positionCount, setPositionCount] = useState(0);
-    const [scale, setScale] = useState(0.8);
-    const [x, setX] = useState(props.x);
-    const [y, setY] = useState(props.y);
-    const [canMove, setCanMove] = useState(0);
-    const [zIndex, setZIndex] = useState(1);
-    const [selectedBot, setSelectedBot] = useState(false);
+    const [positionCount, setPositionCount] = useState(0)
+    const [scale, setScale] = useState(0.8)
+    const [x, setX] = useState(props.x)
+    const [y, setY] = useState(props.y)
+    const [canMove, setCanMove] = useState(0)
+    const [zIndex, setZIndex] = useState(1)
+    const selectedBot = useRef(false)
+    const limiter = useRef(0)
 
     //? moving bot (bot AI)
     useEffect(() => {
@@ -126,39 +126,43 @@ function Token(props) {
                 else { check = 0; }
             }
         }
-        else if (props.botMoves.length === 4 && props.botPlaying) {
+        if (props.botMoves.length === 4 && props.botPlaying && props.color === props.turn && !selectedBot.current && props.number !== 0 && props.count.current < 3) {
             if (props.id === idSelector(props.botMoves)) {
-                console.log("****************");
-                setSelectedBot(true);
+                props.count.current = 0;
+                selectedBot.current = true;
             }
         }
-    }, [props, positionCount, selectedBot])
+    }, [props, positionCount])
 
     //? deciding which token is eligible for move and then changing their size
     useEffect(() => {
         if (props.turn === props.color) {
             setZIndex(2);
-            if (props.number === 6) {
-                positionCount < 58 - props.number ? setScale(1.2) : count++;
+            if (props.number === 6 && limiter.current === 0) {
+                positionCount < 58 - props.number ? setScale(1.2) : props.count.current = props.count.current + 1;
+                limiter.current += 1;
             }
             else if (props.number === 0) {
+                limiter.current = 0;
                 setScale(0.8);
             }
-            else if (props.number > 0) {
-                positionCount < 58 - props.number && positionCount > 0 ? setScale(1.2) : count++;
+            else if (props.number > 0 && limiter.current === 0) {
+                positionCount < 58 - props.number && positionCount > 0 ? setScale(1.2) : props.count.current = props.count.current + 1;
+                limiter.current += 1;
             }
         }
         else {
             setZIndex(1);
+            setScale(0.8);
+            limiter.current = 0;
         }
-        if (count === 4) {
+        if (props.count.current === 4) {
+            props.count.current = 0;
             props.setChangeTurn(true);
             props.setNumber(0);
             props.setBlock(true);
-            props.setBotMoves([]);
-            count = 0;
         }
-    }, [positionCount, props])
+    }, [positionCount, props, scale])
 
     //? changing the position of token on board
     const nextStep = (nextPosition) => {
@@ -197,6 +201,7 @@ function Token(props) {
                 }
             });
             //? extra chance if collide
+            props.count.current = 0;
             props.setBlock(true);
             props.collideTokenID === "" && tempNumber !== 6 && tempNumber !== 0 && positionCount !== 57 ? props.setChangeTurn(true) : props.setChangeTurn(false);
             counter = -1;
@@ -239,8 +244,7 @@ function Token(props) {
 
     //? moving the eligible token when the user clicks
     const move = useCallback(() => {
-        if (scale === 1.2) {
-            count = 0;
+        if (scale === 1.2 && props.number !== 0) {
             if (positionCount === 0) {
                 //? increasing position counter
                 setPositionCount(p => {
@@ -260,20 +264,21 @@ function Token(props) {
                     }
                 }, 350);
             }
+            props.count.current = 0;
             props.setNumber(0);
         }
     }, [props, scale, positionCount])
 
     useEffect(() => {
         //? move the chosen token
-        if (selectedBot && props.botPlaying && count < 3) {
-            console.log(props.id, "second");
-            props.setBotMoves([]);
-            setSelectedBot(false);
+        if (selectedBot.current && scale === 1.2 && props.number !== 0 && props.turn === props.color && props.count.current < 3) {
+            selectedBot.current = false;
+            props.count.current = 0;
             move();
         }
-        else if (count === 3 && scale === 1.2 && props.number !== 0) {
-            if (props.botPlaying) { props.setBotMoves([]); console.log("empty"); }
+        if (props.count.current === 3 && scale === 1.2 && props.number !== 0 && props.turn === props.color) {
+            selectedBot.current = false;
+            props.count.current = 0;
             move();
         }
     }, [props, move, scale, selectedBot])

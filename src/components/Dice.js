@@ -10,7 +10,8 @@ function Dice(props) {
         if (props.number === 0 && props.block) {
             let audio = new Audio(rollingSound);
             audio.play();
-            let number = Math.floor(1 + (6) * Math.random());
+            let number = Math.floor(1 + (7) * Math.random());
+            if (number > 6) { number = 6 }
             for (let i = 1; i <= 6; i++) {
                 if (number === i) {
                     setAnimation('0')
@@ -19,10 +20,16 @@ function Dice(props) {
                     }, 100);
                 }
             }
+            if (number === 6) { props.limiter.current += 1 }
+            else if (number !== 0) { props.limiter.current = 0 }
             props.setBlock(false);
             setOff('all')
             setTimeout(() => {
+                // if (props.limiter.current !== 3) {
                 props.setNumber(number);
+                // } else {
+                //     props.setNumber(0);
+                // }
             }, 500);
         }
     }, [props])
