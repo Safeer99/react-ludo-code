@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Dice from './Dice';
 import Token from './Token';
+import CrownImage from './CrownImage';
 import details from '../details.json';
 
 import greenTokenImage from '../assets/images/greenToken.png'
 import yellowTokenImage from '../assets/images/yellowToken.png'
 import blueTokenImage from '../assets/images/blueToken.png'
 import redTokenImage from '../assets/images/redToken.png'
-import Winner from './Winner';
 
-function winnerChecker(positions, rank, setRank) {
+function winnerChecker(positions, rank, setRank, finished, setFinished) {
     let gCount = 0, yCount = 0, bCount = 0, rCount = 0;
     positions.forEach(element => {
         if (element.color === 'green' && element.p === '06') {
@@ -22,17 +22,18 @@ function winnerChecker(positions, rank, setRank) {
             rCount++;
         }
     })
-    if (gCount === 4 && rank.first !== 'green' && rank.second !== 'green' && rank.third !== 'green') {
-        rank.first === '' ? setRank({ ...rank, first: "green" }) : rank.second === '' ? setRank({ ...rank, second: "green" }) : setRank({ ...rank, third: "green" });
-    }
-    if (yCount === 4 && rank.first !== 'yellow' && rank.second !== 'yellow' && rank.third !== 'yellow') {
-        rank.first === '' ? setRank({ ...rank, first: "yellow" }) : rank.second === '' ? setRank({ ...rank, second: "yellow" }) : setRank({ ...rank, third: "yellow" });
-    }
-    if (bCount === 4 && rank.first !== 'blue' && rank.second !== 'blue' && rank.third !== 'blue') {
-        rank.first === '' ? setRank({ ...rank, first: "blue" }) : rank.second === '' ? setRank({ ...rank, second: "blue" }) : setRank({ ...rank, third: "blue" });
-    }
-    if (rCount === 4 && rank.first !== 'red' && rank.second !== 'red' && rank.third !== 'red') {
-        rank.first === '' ? setRank({ ...rank, first: "red" }) : rank.second === '' ? setRank({ ...rank, second: "red" }) : setRank({ ...rank, third: "red" });
+    if (gCount === 4 && !finished.green) {
+        setRank(p => [...p, { color: 'green', p: 1 + rank.length }])
+        setFinished({ ...finished, green: true })
+    } else if (yCount === 4 && !finished.yellow) {
+        setRank(p => [...p, { color: 'yellow', p: 1 + rank.length }])
+        setFinished({ ...finished, yellow: true })
+    } else if (bCount === 4 && !finished.blue) {
+        setRank(p => [...p, { color: 'blue', p: 1 + rank.length }])
+        setFinished({ ...finished, blue: true })
+    } else if (rCount === 4 && !finished.red) {
+        setRank(p => [...p, { color: 'red', p: 1 + rank.length }])
+        setFinished({ ...finished, red: true })
     }
 }
 
@@ -73,16 +74,15 @@ function Board(props) {
         { color: 'red', id: 'r4', p: 'r4' }
     ])
 
-    const [botMoves, setBotMoves] = useState([]);
-    const [number, setNumber] = useState(0);
-    const [turn, setTurn] = useState('red');
-    const [changeTurn, setChangeTurn] = useState(true);
-    const [collideTokenID, setCollideTokenID] = useState("");
-    const [botRollDice, setBotRollDice] = useState(false);
-    const [block, setBlock] = useState(true);
-    const [name, setName] = useState('');
-    const count = useRef(0);
-    const limiter = useRef(0);
+    const [botMoves, setBotMoves] = useState([])
+    const [number, setNumber] = useState(0)
+    const [turn, setTurn] = useState('red')
+    const [changeTurn, setChangeTurn] = useState(true)
+    const [collideTokenID, setCollideTokenID] = useState("")
+    const [botRollDice, setBotRollDice] = useState(false)
+    const [block, setBlock] = useState(true)
+    const [name, setName] = useState('')
+    const count = useRef(0)
 
     useEffect(() => {
         if (number === 0 && botMoves.length !== 0) {
@@ -102,26 +102,36 @@ function Board(props) {
     }, [setBotRollDice, props, turn, changeTurn, block])
 
     useEffect(() => {
-        if (changeTurn) {
-            winnerChecker(positions, props.rank, props.setRank);
-            limiter.current = 0;
+        if (changeTurn && props.start) {
             setTimeout(() => {
                 if (turn === 'green') {
-                    props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : setTurn('green');
+                    props.status.yellow.playing && !props.finished.yellow ? setTurn('yellow') :
+                        props.status.blue.playing && !props.finished.blue ? setTurn('blue') :
+                            props.status.red.playing && !props.finished.red ? setTurn('red') :
+                                setTurn('')
                 }
                 else if (turn === 'yellow') {
-                    props.status.blue.playing ? setTurn('blue') : props.status.red.playing ? setTurn('red') : props.status.green.playing ? setTurn('green') : setTurn('yellow');
+                    props.status.blue.playing && !props.finished.blue ? setTurn('blue') :
+                        props.status.red.playing && !props.finished.red ? setTurn('red') :
+                            props.status.green.playing && !props.finished.green ? setTurn('green') :
+                                setTurn('')
                 }
                 else if (turn === 'blue') {
-                    props.status.red.playing ? setTurn('red') : props.status.green.playing ? setTurn('green') : props.status.yellow.playing ? setTurn('yellow') : setTurn('blue');
+                    props.status.red.playing && !props.finished.red ? setTurn('red') :
+                        props.status.green.playing && !props.finished.green ? setTurn('green') :
+                            props.status.yellow.playing && !props.finished.yellow ? setTurn('yellow') :
+                                setTurn('')
                 }
                 else if (turn === 'red') {
-                    props.status.green.playing ? setTurn('green') : props.status.yellow.playing ? setTurn('yellow') : props.status.blue.playing ? setTurn('blue') : setTurn('red');
+                    props.status.green.playing && !props.finished.green ? setTurn('green') :
+                        props.status.yellow.playing && !props.finished.yellow ? setTurn('yellow') :
+                            props.status.blue.playing && !props.finished.blue ? setTurn('blue') :
+                                setTurn('')
                 }
                 setChangeTurn(false);
             }, 500);
         }
-    }, [changeTurn, props, turn, positions])
+    }, [changeTurn, props, turn])
 
     useEffect(() => {
         //? changing the name of player on screen
@@ -132,14 +142,20 @@ function Board(props) {
 
     }, [name, turn, props])
 
+    useEffect(() => {
+        if (changeTurn && props.start) {
+            winnerChecker(positions, props.rank, props.setRank, props.finished, props.setFinished);
+        }
+    }, [props, changeTurn, positions])
+
     return (
         <>
             <div className='container' style={{ flexDirection: `${flexDirection}` }}>
                 <div className='board' style={{ width: `${boardWidth}px`, height: `${boardHeight}px` }}>
                     <div style={{ width: `${boardWidth}px`, height: `${boardHeight}px`, position: "absolute", pointerEvents: 'none' }}>
-                        <Winner rank={'first'} color={props.rank.first} />
-                        <Winner rank={'second'} color={props.rank.second} />
-                        <Winner rank={'third'} color={props.rank.third} />
+                        {props.rank.map((element) => {
+                            return <CrownImage key={element.color} color={element.color} p={element.p} />
+                        })}
                     </div>
                     {details.map((element) => {
                         if (element.colour === 'green' && props.status.green.playing) {
@@ -165,6 +181,7 @@ function Board(props) {
                                     count={count}
                                     botMoves={botMoves}
                                     setBotMoves={setBotMoves}
+                                    start={props.start}
                                 />
                             </div>
                         }
@@ -191,6 +208,7 @@ function Board(props) {
                                     count={count}
                                     botMoves={botMoves}
                                     setBotMoves={setBotMoves}
+                                    start={props.start}
                                 />
                             </div>
                         }
@@ -217,6 +235,7 @@ function Board(props) {
                                     count={count}
                                     botMoves={botMoves}
                                     setBotMoves={setBotMoves}
+                                    start={props.start}
                                 />
                             </div>
                         }
@@ -243,6 +262,7 @@ function Board(props) {
                                     count={count}
                                     botMoves={botMoves}
                                     setBotMoves={setBotMoves}
+                                    start={props.start}
                                 />
                             </div>
                         }
@@ -257,7 +277,9 @@ function Board(props) {
                         setBotRollDice={setBotRollDice}
                         block={block}
                         setBlock={setBlock}
-                        limiter={limiter}
+                        setChangeTurn={setChangeTurn}
+                        turn={turn}
+                        status={props.status}
                     />
                     <div className="playerName" style={{ textShadow: `2px 2px 5px ${turn}, -2px -2px 5px ${turn}` }}>
                         <div>

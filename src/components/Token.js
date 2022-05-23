@@ -289,7 +289,9 @@ function Token(props) {
             height: `${props.tokenSize}px`,
             backgroundImage: `url(${props.image})`,
             zIndex: `${zIndex}`,
-            transform: `translateX(${props.tokenSize * x}px) translateY(${props.tokenSize * y}px) scale(${scale})`
+            transform: `translateX(${props.tokenSize * (props.start ? x : 7)}px)
+                        translateY(${props.tokenSize * (props.start ? y : 7)}px) 
+                        scale(${scale})`
         }}>
         </div>
     )

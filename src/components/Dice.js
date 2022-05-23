@@ -1,52 +1,70 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import rollingSound from '../assets/audio/dice-roll-sound-effect.mp3';
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import rollingSound from '../assets/audio/dice-roll-sound-effect.mp3'
+import vibrate from '../assets/audio/vibrate.wav'
 
 function Dice(props) {
 
-    const [animation, setAnimation] = useState('');
-    const [off, setOff] = useState('all');
+    const [animation, setAnimation] = useState('')
+    const [off, setOff] = useState('all')
+    const [vibrateAnimation, setVibrateAnimation] = useState('')
+    const limiter = useRef(0)
 
     const rollDice = useCallback(() => {
         if (props.number === 0 && props.block) {
-            let audio = new Audio(rollingSound);
-            audio.play();
-            let number = Math.floor(1 + (7) * Math.random());
-            if (number > 6) { number = 6 }
+            props.setNumber(0)
+            setVibrateAnimation('')
+            props.setBlock(false)
+            let audio = new Audio(rollingSound)
+            audio.play()
+            let number = Math.floor(1 + (6) * Math.random())
             for (let i = 1; i <= 6; i++) {
                 if (number === i) {
                     setAnimation('0')
                     setTimeout(() => {
-                        setAnimation(`show-${i}`);
-                    }, 100);
+                        setAnimation(`show-${i}`)
+                    }, 100)
                 }
             }
-            if (number === 6) { props.limiter.current += 1 }
-            else if (number !== 0) { props.limiter.current = 0 }
-            props.setBlock(false);
-            setOff('all')
+            if (number === 6) { limiter.current += 1 }
+            else if (number < 6) { limiter.current = 0 }
             setTimeout(() => {
-                // if (props.limiter.current !== 3) {
-                props.setNumber(number);
-                // } else {
-                //     props.setNumber(0);
-                // }
-            }, 500);
+                if (limiter.current !== 3) {
+                    props.setNumber(number)
+                } else {
+                    limiter.current = 0
+                    let sound = new Audio(vibrate)
+                    sound.play()
+                    setVibrateAnimation("diceVibrateAnimation")
+                    setTimeout(() => {
+                        props.setNumber(0)
+                        props.setChangeTurn(true)
+                        props.setBlock(true)
+                    }, 800);
+                }
+            }, 500)
         }
     }, [props])
 
     useEffect(() => {
         if (props.botRollDice) {
-            props.setBotRollDice(false);
             setOff('none')
+            props.setBotRollDice(false)
             setTimeout(() => {
-                rollDice();
-            }, 500);
+                rollDice()
+            }, 500)
         }
     }, [props, rollDice])
 
+    useEffect(() => {
+        if (props.turn === 'green' && !props.status.green.bot) { setOff('all') }
+        else if (props.turn === 'yellow' && !props.status.yellow.bot) { setOff('all') }
+        else if (props.turn === 'blue' && !props.status.blue.bot) { setOff('all') }
+        else if (props.turn === 'red' && !props.status.red.bot) { setOff('all') }
+    }, [props])
+
     return (
         <div>
-            <div className="dice" id="roll" onClick={rollDice} style={{ pointerEvents: `${off}` }}>
+            <div className={`dice ${vibrateAnimation}`} id="roll" onClick={rollDice} style={{ pointerEvents: `${off}` }}>
                 <div id="sides-box" className={`${animation}`}>
                     <div className="side">
                         <div className="one-1 dot"></div>

@@ -10,8 +10,6 @@ import React, { useState, useEffect } from 'react'
 
 function LandingPage(props) {
 
-    const [visibility, setVisibility] = useState('hidden');
-
     const [green, setGreen] = useState({
         name: '',
         bot: false
@@ -79,9 +77,11 @@ function LandingPage(props) {
         red.name === '' ? totalPlayers-- : garbage++;
 
         if ((totalPlayers > 0 && totalBots > 0) || totalPlayers > 1) {
-            setVisibility('hidden');
             const dice = document.getElementById('sides-box');
             dice.style.animation = 'none';
+            props.setActive('');
+            props.setTotalPlaying(totalPlayers + totalBots)
+            props.setStart(true)
             props.setStatus(
                 {
                     green: {
@@ -113,8 +113,8 @@ function LandingPage(props) {
     }
 
     return (
-        <div className="startPage" style={{ visibility: `${visibility}` }}>
-            <div className="noOfPlayers">
+        <div className="startPage">
+            <div className="box pagePopUpAnimation">
                 <div className="logo player">
                     <img srcSet={logo} alt="" height="90%" />
                 </div>
@@ -137,21 +137,21 @@ function LandingPage(props) {
                     />
                 </div>
                 <div className="player">
-                    <img srcSet={redTokenImage} alt="" width="15%" />
-                    <input type="text" name="player Name" value={red.name} id="red" className="nameBox"
-                        onChange={e => setRed({ ...red, name: e.target.value })} />
-                    <img srcSet={red.bot ? botColour : botBlackWhite}
-                        className="bots" id="red" alt="" width="15%"
-                        onClick={() => { setRed({ ...red, bot: !red.bot }) }}
-                    />
-                </div>
-                <div className="player">
                     <img srcSet={blueTokenImage} alt="" width="15%" />
                     <input type="text" name="player Name" value={blue.name} id="blue" className="nameBox"
                         onChange={e => setBlue({ ...blue, name: e.target.value })} />
                     <img srcSet={blue.bot ? botColour : botBlackWhite}
                         className="bots" id="blue" alt="" width="15%"
                         onClick={() => { setBlue({ ...blue, bot: !blue.bot }) }}
+                    />
+                </div>
+                <div className="player">
+                    <img srcSet={redTokenImage} alt="" width="15%" />
+                    <input type="text" name="player Name" value={red.name} id="red" className="nameBox"
+                        onChange={e => setRed({ ...red, name: e.target.value })} />
+                    <img srcSet={red.bot ? botColour : botBlackWhite}
+                        className="bots" id="red" alt="" width="15%"
+                        onClick={() => { setRed({ ...red, bot: !red.bot }) }}
                     />
                 </div>
                 <div className="button player">
