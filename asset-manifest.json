@@ -1,24 +1,26 @@
 {
   "files": {
-    "main.css": "/react-ludo-code/static/css/main.203ab057.css",
-    "main.js": "/react-ludo-code/static/js/main.966a63fb.js",
+    "main.css": "/react-ludo-code/static/css/main.2a274833.css",
+    "main.js": "/react-ludo-code/static/js/main.32ecc099.js",
     "static/js/787.925b3a3c.chunk.js": "/react-ludo-code/static/js/787.925b3a3c.chunk.js",
     "static/media/wallpaper.jpg": "/react-ludo-code/static/media/wallpaper.2233a58959469e4fc3b8.jpg",
+    "static/media/trophy.gif": "/react-ludo-code/static/media/trophy.62c5c3c232eb758e39cc.gif",
+    "static/media/vibrate.wav": "/react-ludo-code/static/media/vibrate.e0585e03c91bd4095f20.wav",
     "static/media/logo.png": "/react-ludo-code/static/media/logo.6673cd1579bd73f4d43d.png",
     "static/media/dice-roll-sound-effect.mp3": "/react-ludo-code/static/media/dice-roll-sound-effect.7cc586f23a099f65b02a.mp3",
+    "static/media/bg.png": "/react-ludo-code/static/media/bg.af1591fcfe3c11ae9946.png",
     "static/media/blueToken.png": "/react-ludo-code/static/media/blueToken.666dfae0c7d7cd745f6c.png",
     "static/media/greenToken.png": "/react-ludo-code/static/media/greenToken.2943bd56719772a3c136.png",
     "static/media/yellowToken.png": "/react-ludo-code/static/media/yellowToken.b60fc2197cc76988f8c2.png",
     "static/media/redToken.png": "/react-ludo-code/static/media/redToken.cb3e5d5d85dc0f4b3891.png",
     "static/media/botColour.png": "/react-ludo-code/static/media/botColour.190566151e39722e1734.png",
-    "static/media/bg.png": "/react-ludo-code/static/media/bg.68cf8cf28f246e84f981.png",
     "index.html": "/react-ludo-code/index.html",
-    "main.203ab057.css.map": "/react-ludo-code/static/css/main.203ab057.css.map",
-    "main.966a63fb.js.map": "/react-ludo-code/static/js/main.966a63fb.js.map",
+    "main.2a274833.css.map": "/react-ludo-code/static/css/main.2a274833.css.map",
+    "main.32ecc099.js.map": "/react-ludo-code/static/js/main.32ecc099.js.map",
     "787.925b3a3c.chunk.js.map": "/react-ludo-code/static/js/787.925b3a3c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.203ab057.css",
-    "static/js/main.966a63fb.js"
+    "static/css/main.2a274833.css",
+    "static/js/main.32ecc099.js"
   ]
 }
