@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/react-ludo-code/static/css/main.2a274833.css",
-    "main.js": "/react-ludo-code/static/js/main.32ecc099.js",
+    "main.js": "/react-ludo-code/static/js/main.6d386903.js",
     "static/js/787.925b3a3c.chunk.js": "/react-ludo-code/static/js/787.925b3a3c.chunk.js",
     "static/media/wallpaper.jpg": "/react-ludo-code/static/media/wallpaper.2233a58959469e4fc3b8.jpg",
     "static/media/trophy.gif": "/react-ludo-code/static/media/trophy.62c5c3c232eb758e39cc.gif",
@@ -16,11 +16,11 @@
     "static/media/botColour.png": "/react-ludo-code/static/media/botColour.190566151e39722e1734.png",
     "index.html": "/react-ludo-code/index.html",
     "main.2a274833.css.map": "/react-ludo-code/static/css/main.2a274833.css.map",
-    "main.32ecc099.js.map": "/react-ludo-code/static/js/main.32ecc099.js.map",
+    "main.6d386903.js.map": "/react-ludo-code/static/js/main.6d386903.js.map",
     "787.925b3a3c.chunk.js.map": "/react-ludo-code/static/js/787.925b3a3c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2a274833.css",
-    "static/js/main.32ecc099.js"
+    "static/js/main.6d386903.js"
   ]
 }
