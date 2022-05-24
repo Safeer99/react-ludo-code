@@ -39,9 +39,9 @@ const EndingPage = (props) => {
                     }
                     return null;
                 })}
-                <div className="button player">
+                {/* <div className="button player">
                     <button id="start" onClick={RestartGame}>Restart</button>
-                </div>
+                </div> */}
                 <div className="creator">
                     Developer :- Safeer Ansari
                 </div>
