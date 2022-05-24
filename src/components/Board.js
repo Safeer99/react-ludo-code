@@ -143,10 +143,10 @@ function Board(props) {
     }, [name, turn, props])
 
     useEffect(() => {
-        if (changeTurn && props.start) {
+        if (block && props.start) {
             winnerChecker(positions, props.rank, props.setRank, props.finished, props.setFinished);
         }
-    }, [props, changeTurn, positions])
+    }, [props, block, positions])
 
     return (
         <>
