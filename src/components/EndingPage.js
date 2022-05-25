@@ -9,9 +9,9 @@ import trophy from '../assets/images/trophy.gif'
 
 const EndingPage = (props) => {
 
-    const RestartGame = () => {
-        props.setActive("start");
-    }
+    // const RestartGame = () => {
+    //     props.setActive("start");
+    // }
 
     return (
         <div className='endPage'>
