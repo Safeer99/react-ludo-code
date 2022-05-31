@@ -1,8 +1,7 @@
 {
   "files": {
     "main.css": "/react-ludo-code/static/css/main.2a274833.css",
-    "main.js": "/react-ludo-code/static/js/main.49f41f43.js",
-    "static/js/787.925b3a3c.chunk.js": "/react-ludo-code/static/js/787.925b3a3c.chunk.js",
+    "main.js": "/react-ludo-code/static/js/main.f7543fd4.js",
     "static/media/wallpaper.jpg": "/react-ludo-code/static/media/wallpaper.2233a58959469e4fc3b8.jpg",
     "static/media/trophy.gif": "/react-ludo-code/static/media/trophy.62c5c3c232eb758e39cc.gif",
     "static/media/vibrate.wav": "/react-ludo-code/static/media/vibrate.e0585e03c91bd4095f20.wav",
@@ -16,11 +15,10 @@
     "static/media/botColour.png": "/react-ludo-code/static/media/botColour.190566151e39722e1734.png",
     "index.html": "/react-ludo-code/index.html",
     "main.2a274833.css.map": "/react-ludo-code/static/css/main.2a274833.css.map",
-    "main.49f41f43.js.map": "/react-ludo-code/static/js/main.49f41f43.js.map",
-    "787.925b3a3c.chunk.js.map": "/react-ludo-code/static/js/787.925b3a3c.chunk.js.map"
+    "main.f7543fd4.js.map": "/react-ludo-code/static/js/main.f7543fd4.js.map"
   },
   "entrypoints": [
     "static/css/main.2a274833.css",
-    "static/js/main.49f41f43.js"
+    "static/js/main.f7543fd4.js"
   ]
 }
