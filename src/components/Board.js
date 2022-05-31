@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Dice from './Dice';
 import Token from './Token';
 import CrownImage from './CrownImage';
-import details from '../details.json';
+import tokenData from '../tokenData.json';
 
 import greenTokenImage from '../assets/images/greenToken.png'
 import yellowTokenImage from '../assets/images/yellowToken.png'
@@ -157,7 +157,7 @@ function Board(props) {
                             return <CrownImage key={element.color} color={element.color} p={element.p} />
                         })}
                     </div>
-                    {details.map((element) => {
+                    {tokenData.map((element) => {
                         if (element.colour === 'green' && props.status.green.playing) {
                             return <div key={element.id} >
                                 <Token

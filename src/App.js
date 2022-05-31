@@ -38,7 +38,7 @@ function App() {
     <>
       <Board status={status} rank={rank} setRank={setRank} finished={finished} setFinished={setFinished} start={start} />
       {active === "start" && <LandingPage setStatus={setStatus} setStart={setStart} setTotalPlaying={setTotalPlaying} setActive={setActive} />}
-      {active === "end" && <EndingPage rank={rank} status={status} totalPlaying={totalPlaying} setActive={setActive} />}
+      {active === "end" && <EndingPage rank={rank} status={status} totalPlaying={totalPlaying} />}
     </>
   );
 }
